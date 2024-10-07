@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @CrossOrigin(origins = "*")
@@ -37,6 +38,18 @@ public class FormationController {
     public Formation createFormation(@RequestBody Formation formation) {
 
         return formationService.addFormation(formation);
+    }
+
+
+    @GetMapping("/recent")
+    public List<Formation> getUpcomingFormations() {
+        return formationService.getUpcomingFormations(); // Récupérez les 3 dernières formations à venir
+    }
+
+    @GetMapping("/by-month")
+    public ResponseEntity<List<Map<String, Object>>> getFormationsByMonth() {
+        List<Map<String, Object>> formationsByMonth = formationService.getFormationsCountByMonth();
+        return ResponseEntity.ok(formationsByMonth);
     }
 
     @PutMapping("/modifier/{id}")

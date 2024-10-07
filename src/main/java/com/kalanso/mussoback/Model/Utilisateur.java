@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.time.LocalDate;
 import java.util.*;
 
 @Entity
@@ -27,13 +29,12 @@ public class Utilisateur implements UserDetails {
     private String email;
     private String phone;
     private String password;
+    private LocalDate dateAjout;  // Nouveau champ pour la date d'ajout
 
     @ManyToOne
     @JoinColumn(name = "role_id")
     @JsonIgnore
     private Role role;
-
-
 
     @OneToMany(mappedBy = "utilisateur")
     @JsonIgnore
@@ -48,6 +49,11 @@ public class Utilisateur implements UserDetails {
    @JsonIgnore
     private List<Formation> formations;
 
+    // Méthode pour définir automatiquement la date d'ajout
+    @PrePersist
+    protected void onCreate() {
+        this.dateAjout = LocalDate.now();  // Assigner la date actuelle lors de la création
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

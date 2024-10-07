@@ -16,10 +16,16 @@ public class Article {
     private String description;
     private String type;
     private LocalDate datePublication;
-
+    private LocalDate dateAjout;  // Nouveau champ pour la date d'ajout
     @ManyToOne
     @JoinColumn(name = "utilisateur",nullable = true)
     private Utilisateur utilisateur;  // Relation avec l'utilisateur qui a posté l'offre
 
+
+    // Méthode pour définir la date d'ajout automatiquement
+    @PrePersist
+    protected void onCreate() {
+        this.dateAjout = LocalDate.now();  // Assigner la date actuelle lors de la création
+    }
     // Getters et Setters
 }

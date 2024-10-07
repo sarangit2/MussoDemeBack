@@ -9,7 +9,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -26,6 +28,12 @@ public class FormationService {
         return formationRepository.findAll();
     }
 
+
+    public List<Map<String, Object>> getFormationsCountByMonth() {
+        return formationRepository.countFormationsByMonth();
+    }
+
+
     public Optional<Formation> getFormationById(Long id) {
         return formationRepository.findById(id);
     }
@@ -35,6 +43,11 @@ public class FormationService {
         Utilisateur utilisateur = utilisateurRepository.findByEmail(((UserDetails)currentUser).getUsername()).get();
         formation.setUtilisateur(utilisateur);
         return formationRepository.save(formation);
+    }
+
+    public List<Formation> getUpcomingFormations() {
+        LocalDate today = LocalDate.now();
+        return formationRepository.findTop3ByDateDebutAfterOrderByDateDebut(today); // Exemple d'utilisation d'une méthode de repository
     }
 
     public Formation updateFormation(Long id, Formation formationDetails) {

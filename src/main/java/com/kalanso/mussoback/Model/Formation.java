@@ -19,6 +19,8 @@ public class Formation {
     private LocalDate dateFin;
     private String organisateur;
 
+    private LocalDate dateAjout;  // Nouveau champ pour la date d'ajout
+
     @ManyToOne
     @JoinColumn(name = "utilisateur_id")
     private Utilisateur utilisateur; // Relation avec Utilisateur
@@ -34,6 +36,11 @@ public class Formation {
         this.dateFin = dateFin;
         this.organisateur = organisateur;
         this.utilisateur = utilisateur;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.dateAjout = LocalDate.now(); // Définir automatiquement la date d'ajout
     }
 
     public Long getId() { return id; }
@@ -60,9 +67,9 @@ public class Formation {
 
     public void setOrganisateur(String organisateur) { this.organisateur = organisateur; }
 
+    public LocalDate getDateAjout() { return dateAjout; } // Getter pour dateAjout
+
     public Utilisateur getUtilisateur() { return utilisateur; }
 
     public void setUtilisateur(Utilisateur utilisateur) { this.utilisateur = utilisateur; }
 }
-
-
