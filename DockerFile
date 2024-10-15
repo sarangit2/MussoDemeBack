@@ -1,0 +1,7 @@
+FROM openjdk:17
+
+WORKDIR /saran
+
+COPY target/MussoBack-0.0.1-SNAPSHOT.jar /saran/demo.jar
+
+ENTRYPOINT ["java", "-jar", "/saran/demo.jar"]
