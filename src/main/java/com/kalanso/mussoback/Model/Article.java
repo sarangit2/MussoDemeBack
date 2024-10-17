@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.io.File;
 import java.time.LocalDate;
 
 @Entity
@@ -15,6 +16,7 @@ public class Article {
     private String titre;
     private String description;
     private String type;
+    private String audioUrl;  // Ajout du champ audioUrl
     private LocalDate datePublication;
     private LocalDate dateAjout;  // Nouveau champ pour la date d'ajout
     @ManyToOne
