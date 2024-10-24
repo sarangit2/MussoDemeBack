@@ -46,7 +46,7 @@ public class Utilisateur implements UserDetails {
     private List<Article> articles;
 
     @OneToMany(mappedBy = "utilisateur")
-   @JsonIgnore
+    @JsonBackReference
     private List<Formation> formations;
 
     // Méthode pour définir automatiquement la date d'ajout

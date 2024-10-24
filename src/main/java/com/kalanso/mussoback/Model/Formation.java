@@ -1,9 +1,6 @@
 package com.kalanso.mussoback.Model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
 
 @Entity
@@ -18,24 +15,32 @@ public class Formation {
     private LocalDate dateDebut;
     private LocalDate dateFin;
     private String organisateur;
+    private LocalDate dateAjout;  // Champ pour la date d'ajout
 
-    private LocalDate dateAjout;  // Nouveau champ pour la date d'ajout
+    @Enumerated(EnumType.STRING)
+    private Categorie categorie; // Enum pour la catégorie
 
     @ManyToOne
     @JoinColumn(name = "utilisateur_id")
     private Utilisateur utilisateur; // Relation avec Utilisateur
 
+    private String videoPath; // Champ pour le chemin de la vidéo
+    private String imageUrl;  // Chemin ou URL de l'image
+
     // Constructeurs, getters et setters
 
     public Formation() {}
 
-    public Formation(String titre, String description, LocalDate dateDebut, LocalDate dateFin, String organisateur, Utilisateur utilisateur) {
+    public Formation(String titre, String description, LocalDate dateDebut, LocalDate dateFin, String organisateur, Categorie categorie, Utilisateur utilisateur, String videoPath, String imageUrl) {
         this.titre = titre;
         this.description = description;
         this.dateDebut = dateDebut;
         this.dateFin = dateFin;
         this.organisateur = organisateur;
+        this.categorie = categorie;
         this.utilisateur = utilisateur;
+        this.videoPath = videoPath;
+        this.imageUrl = imageUrl;  // Ajouter imageUrl ici
     }
 
     @PrePersist
@@ -43,6 +48,7 @@ public class Formation {
         this.dateAjout = LocalDate.now(); // Définir automatiquement la date d'ajout
     }
 
+    // Getters et setters
     public Long getId() { return id; }
 
     public void setId(Long id) { this.id = id; }
@@ -69,7 +75,19 @@ public class Formation {
 
     public LocalDate getDateAjout() { return dateAjout; } // Getter pour dateAjout
 
+    public Categorie getCategorie() { return categorie; } // Getter pour catégorie
+
+    public void setCategorie(Categorie categorie) { this.categorie = categorie; } // Setter pour catégorie
+
     public Utilisateur getUtilisateur() { return utilisateur; }
 
     public void setUtilisateur(Utilisateur utilisateur) { this.utilisateur = utilisateur; }
+
+    public String getVideoPath() { return videoPath; } // Getter pour videoPath
+
+    public void setVideoPath(String videoPath) { this.videoPath = videoPath; } // Setter pour videoPath
+
+    public String getImageUrl() { return imageUrl; }  // Getter pour imageUrl
+
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }  // Setter pour imageUrl
 }

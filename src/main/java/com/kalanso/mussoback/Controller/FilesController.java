@@ -4,7 +4,8 @@ package com.kalanso.mussoback.Controller;
 import com.kalanso.mussoback.Model.FileInfo;
 import com.kalanso.mussoback.Service.FilesStorageService;
 
-import com.kalanso.mussodeme.messags.ResponseMessage;
+
+import com.kalanso.mussoback.messags.ResponseMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -21,7 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
-@CrossOrigin({"http://localhost:8100", "http://localhost:8080"})
+@CrossOrigin(origins = "*")
 public class FilesController {
 
     @Autowired
@@ -33,7 +34,7 @@ public class FilesController {
         try {
             List<String> fileNames = new ArrayList<>();
 
-            Arrays.asList(files).stream().forEach(file -> {
+            Arrays.stream(files).forEach(file -> {
                 storageService.save(file);
                 fileNames.add(file.getOriginalFilename());
             });

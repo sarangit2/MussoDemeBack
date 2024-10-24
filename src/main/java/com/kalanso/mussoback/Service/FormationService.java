@@ -39,11 +39,20 @@ public class FormationService {
     }
 
     public Formation addFormation(Formation formation) {
+        // Vérifiez si la catégorie est null
+        if (formation.getCategorie() == null) {
+            throw new IllegalArgumentException("La catégorie ne peut pas être null.");
+        }
+
+        // Récupérer l'utilisateur actuellement authentifié
         Object currentUser = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Utilisateur utilisateur = utilisateurRepository.findByEmail(((UserDetails)currentUser).getUsername()).get();
-        formation.setUtilisateur(utilisateur);
-        return formationRepository.save(formation);
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(((UserDetails) currentUser).getUsername())
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé")); // Gestion des erreurs si l'utilisateur n'est pas trouvé
+
+        formation.setUtilisateur(utilisateur); // Assigner l'utilisateur à la formation
+        return formationRepository.save(formation); // Enregistrer la formation
     }
+
 
     public List<Formation> getUpcomingFormations() {
         LocalDate today = LocalDate.now();

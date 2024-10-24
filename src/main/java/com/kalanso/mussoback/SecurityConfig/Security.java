@@ -31,7 +31,8 @@ public class Security {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(request-> request
-                        .requestMatchers("/api/**").permitAll()
+                        .requestMatchers("/api/**", "/images/**").permitAll()
+
 
                      /*   .requestMatchers("/cours/**").permitAll()
                         .requestMatchers("/EntiteOdc/**").permitAll()

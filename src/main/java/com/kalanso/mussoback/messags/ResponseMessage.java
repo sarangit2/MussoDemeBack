@@ -1,4 +1,4 @@
-package com.kalanso.mussodeme.messags;
+package com.kalanso.mussoback.messags;
 
 import lombok.*;
 
