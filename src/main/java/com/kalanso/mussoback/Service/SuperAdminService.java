@@ -51,6 +51,8 @@ public class SuperAdminService implements CrudService<SuperAdmin, Long> {
         return superAdminRepository.save(superAdmin);
     }
 
+
+
     @Override
     public SuperAdmin add(SuperAdmin entity) {
         return null;

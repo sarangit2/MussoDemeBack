@@ -23,6 +23,8 @@ public class UtilisateurService implements UserDetailsService {
         return utilisateurRepository.findByEmail(username).orElseThrow();
     }
 
+
+
     // Méthode pour récupérer l'utilisateur connecté
     public Utilisateur getCurrentUser() {
         // Récupérer l'utilisateur connecté à partir de la sécurité

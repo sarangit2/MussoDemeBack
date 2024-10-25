@@ -22,6 +22,7 @@ public class Role {
 
 
     @OneToMany(mappedBy = "role", fetch = FetchType.EAGER)
+    @JsonBackReference
     private List<Utilisateur> utilisateurs;
 
 }

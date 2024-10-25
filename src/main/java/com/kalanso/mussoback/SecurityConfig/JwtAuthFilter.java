@@ -1,6 +1,5 @@
 package com.kalanso.mussoback.SecurityConfig;
 
-
 import com.kalanso.mussoback.Service.UtilisateurService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -26,7 +25,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
         final String authHeader = request.getHeader("Authorization");
         final String jwtToken;
         final String userEmail;
@@ -36,22 +34,26 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
 
-        jwtToken = authHeader.substring(7);
-        userEmail = jwtUtile.extractUsername(jwtToken);
+        // Vérifiez que le header commence par "Bearer " et que la longueur est suffisante
+        if (authHeader.startsWith("Bearer ") && authHeader.length() > 7) {
+            jwtToken = authHeader.substring(7); // Obtenez le token sans "Bearer "
+            userEmail = jwtUtile.extractUsername(jwtToken);
 
-        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = utilisateurService.loadUserByUsername(userEmail);
+            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = utilisateurService.loadUserByUsername(userEmail);
 
-            if (jwtUtile.isTokenValid(jwtToken, userDetails)) {
-                SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-                UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities()
-                );
-                token.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                securityContext.setAuthentication(token);
-                SecurityContextHolder.setContext(securityContext);
+                if (jwtUtile.isTokenValid(jwtToken, userDetails)) {
+                    SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+                    UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities()
+                    );
+                    token.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    securityContext.setAuthentication(token);
+                    SecurityContextHolder.setContext(securityContext);
+                }
             }
         }
+
         filterChain.doFilter(request, response);
     }
 }

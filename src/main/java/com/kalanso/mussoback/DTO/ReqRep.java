@@ -27,5 +27,5 @@ public class ReqRep {
     private String password;
     private Role role;
     private Utilisateur utilisateur;
-    private List<Utilisateur> utilisateursList;
+    private Long userId; // Ajoutez cette ligne pour stocker l'ID utilisateur
 }

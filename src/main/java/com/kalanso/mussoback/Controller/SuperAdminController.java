@@ -44,6 +44,8 @@ public class SuperAdminController {
         return superAdminService.findById(id);
     }
 
+
+
     @PutMapping("/modifier/{id}")
     @ResponseStatus(HttpStatus.CREATED)
     public SuperAdmin Modifier(@PathVariable Long id, @RequestBody SuperAdmin superAdmin) {
