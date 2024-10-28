@@ -1,11 +1,12 @@
 package com.kalanso.mussoback.Model;
 
-
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.util.Date;
 
 @Entity
+@Data
 @Table(name = "inscriptions")
 public class Inscription {
 
@@ -13,17 +14,23 @@ public class Inscription {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "formation_id")
-    private Long formationId;
+    @ManyToOne
+    @JoinColumn(name = "formation_id", nullable = false)
+    private Formation formation; // Établir une relation avec la formation
 
-    @Column(name = "user_id")
-    private Long userId; // Assurez-vous que l'utilisateur est lié à cette inscription
+    @ManyToOne
+    @JoinColumn(name = "utilisateur_id", nullable = false) // Changez de userId à utilisateur
+    private Utilisateur utilisateur; // Établir une relation avec l'utilisateur
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_inscription")
     private Date dateInscription;
 
-    // Getters and Setters
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private status status; // Champ pour stocker le statut de l'inscription
+
+    // Getters et Setters
     public Long getId() {
         return id;
     }
@@ -32,20 +39,20 @@ public class Inscription {
         this.id = id;
     }
 
-    public Long getFormationId() {
-        return formationId;
+    public Formation getFormation() {
+        return formation;
     }
 
-    public void setFormationId(Long formationId) {
-        this.formationId = formationId;
+    public void setFormation(Formation formation) {
+        this.formation = formation;
     }
 
-    public Long getUserId() {
-        return userId;
+    public Utilisateur getUtilisateur() {
+        return utilisateur;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUtilisateur(Utilisateur utilisateur) {
+        this.utilisateur = utilisateur;
     }
 
     public Date getDateInscription() {
@@ -55,5 +62,12 @@ public class Inscription {
     public void setDateInscription(Date dateInscription) {
         this.dateInscription = dateInscription;
     }
-}
 
+    public status getStatus() {
+        return status;
+    }
+
+    public void setStatus(status status) {
+        this.status = status;
+    }
+}

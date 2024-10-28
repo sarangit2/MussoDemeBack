@@ -8,8 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface InscriptionRepository extends JpaRepository<Inscription, Long> {
+    // Méthode pour trouver les inscriptions par utilisateur
+    List<Inscription> findByUtilisateur(Utilisateur utilisateur);
 
 
-    // Méthodes personnalisées si nécessaire
 }
 

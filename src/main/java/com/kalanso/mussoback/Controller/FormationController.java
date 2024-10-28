@@ -62,6 +62,12 @@ public class FormationController {
         }
     }
 
+    @GetMapping("/mesformations")
+    public ResponseEntity<List<Formation>> getFormationsForConnectedUser() {
+        List<Formation> formations = formationService.getFormationsForConnectedUser();
+        return ResponseEntity.ok(formations);
+    }
+
     @GetMapping("/liste")
     @ResponseStatus(HttpStatus.OK)
     public List<Formation> getAllFormations() {

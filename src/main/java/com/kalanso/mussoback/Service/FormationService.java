@@ -5,6 +5,7 @@ import com.kalanso.mussoback.Repository.FormationRepository;
 import com.kalanso.mussoback.Repository.UtilisateurRepository;
 import com.kalanso.mussoback.Model.Formation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -57,6 +58,22 @@ public class FormationService {
     public List<Formation> getUpcomingFormations() {
         LocalDate today = LocalDate.now();
         return formationRepository.findTop3ByDateDebutAfterOrderByDateDebut(today); // Exemple d'utilisation d'une méthode de repository
+    }
+
+    // Méthode pour récupérer les formations de l'utilisateur connecté
+    public List<Formation> getFormationsForConnectedUser() {
+        // Récupération de l'utilisateur connecté
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName(); // Récupère l'email de l'utilisateur connecté
+
+        // Recherchez l'utilisateur en fonction de son email
+        Optional<Utilisateur> utilisateurOpt = utilisateurRepository.findByEmail(email);
+
+        if (utilisateurOpt.isPresent()) {
+            return List.copyOf(utilisateurOpt.get().getFormations());
+        } else {
+            throw new RuntimeException("Utilisateur non trouvé pour l'email : " + email);
+        }
     }
 
     public Formation updateFormation(Long id, Formation formationDetails) {
