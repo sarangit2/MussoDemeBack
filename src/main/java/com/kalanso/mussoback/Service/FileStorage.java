@@ -1,6 +1,5 @@
 package com.kalanso.mussoback.Service;
 
-
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,10 +16,11 @@ public class FileStorage {
     private final String dossierAudio = "uploads/audio/";
     private final String images = "images/";
     private final String dossierText = "uploads/text/";
+    private final String dossierPDF = "images/"; // Dossier pour les PDF
     private final String lien = "http://localhost:8080";  // URL publique pour le frontend
 
     // Sauvegarde un fichier vidéo
-    public String saveVideo (MultipartFile fichier) throws IOException {
+    public String saveVideo(MultipartFile fichier) throws IOException {
         return saveFile(fichier, images, "video");
     }
 
@@ -30,12 +30,17 @@ public class FileStorage {
     }
 
     // Sauvegarde un fichier texte
-    public String saveText (MultipartFile fichier) throws IOException {
-        return saveFile(fichier, images, "text");
+    public String saveText(MultipartFile fichier) throws IOException {
+        return saveFile(fichier, dossierText, "text");
+    }
+
+    // Sauvegarde un fichier PDF
+    public String savePDF(MultipartFile fichier) throws IOException {
+        return saveFile(fichier, dossierPDF, "pdf");
     }
 
     // Méthode générique pour sauvegarder un fichier
-    private String saveFile (MultipartFile fichier, String dossier, String type) throws IOException {
+    private String saveFile(MultipartFile fichier, String dossier, String type) throws IOException {
         // Vérifie si le dossier de destination existe, sinon le créer
         Path cheminDossier = Paths.get(dossier);
         if (!Files.exists(cheminDossier)) {
@@ -50,13 +55,16 @@ public class FileStorage {
 
         // Vérifie que l'extension du fichier est valide
         if (type.equals("video") && !isValidVideoFile(nomFichier)) {
-            throw new IOException("Le fichier video n'est pas valide.");
+            throw new IOException("Le fichier vidéo n'est pas valide.");
         }
         if (type.equals("text") && !isValidTextFile(nomFichier)) {
-            throw new IOException("Le fichier text n'est pas valide.");
+            throw new IOException("Le fichier texte n'est pas valide.");
         }
         if (type.equals("image") && !isValidImageFile(nomFichier)) {
             throw new IOException("Le fichier image n'est pas valide.");
+        }
+        if (type.equals("pdf") && !isValidPDFFile(nomFichier)) {
+            throw new IOException("Le fichier PDF n'est pas valide.");
         }
 
         // Génère un nom de fichier unique pour éviter les conflits
@@ -71,9 +79,16 @@ public class FileStorage {
         return lien + "/" + dossier + nomFichierUnique;
     }
 
+    // Vérifie que l'extension du fichier est valide pour les fichiers texte
     private boolean isValidTextFile(String nomFichier) {
         String extension = getFileExtension(nomFichier).toLowerCase();
         return extension.equals("txt") || extension.equals("pdf");
+    }
+
+    // Vérifie que l'extension du fichier est valide pour les fichiers PDF
+    private boolean isValidPDFFile(String nomFichier) {
+        String extension = getFileExtension(nomFichier).toLowerCase();
+        return extension.equals("pdf");
     }
 
     // Supprimer un fichier (basé sur l'URL sauvegardée)
@@ -86,7 +101,7 @@ public class FileStorage {
         Files.deleteIfExists(cheminFichier);
     }
 
-    // Vérifie si le fichier audio a une extension valide
+    // Vérifie si le fichier vidéo a une extension valide
     private boolean isValidVideoFile(String nomFichier) {
         String extension = getFileExtension(nomFichier).toLowerCase();
         return extension.equals("mp4") || extension.equals("avi");
@@ -107,4 +122,3 @@ public class FileStorage {
         return nomFichier.substring(lastIndexOfDot + 1);
     }
 }
-

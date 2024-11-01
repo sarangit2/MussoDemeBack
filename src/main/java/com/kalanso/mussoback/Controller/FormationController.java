@@ -25,42 +25,46 @@ import java.util.Optional;
 @RequestMapping("/api/formations")
 public class FormationController {
 
-    private FormationService formationService;
-    private ObjectMapper objectMapper;
-    private FileStorage fileStorage;
+    private final FormationService formationService;
+    private final ObjectMapper objectMapper;
+    private final FileStorage fileStorage;
+
     @PostMapping("/ajout")
     public ResponseEntity<Formation> createFormation(
             @RequestPart("formation") String formationJson,
             @RequestPart("videoFile") MultipartFile videoFile,
-            @RequestPart("imageFile") MultipartFile imageFile) { // Ajoutez ce paramètre
+            @RequestPart("imageFile") MultipartFile imageFile,
+            @RequestPart("pdfFile") MultipartFile pdfFile) { // Ajout du paramètre pdfFile
 
         try {
+            System.out.println("start add");
             Formation formation = objectMapper.readValue(formationJson, Formation.class);
+            System.out.println("formation :" + formation);
 
             // Sauvegarder le fichier vidéo
             String videoPath = fileStorage.saveVideo(videoFile);
-            //String videoUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
-              //      .path("/images/") // Mettez à jour le chemin pour les vidéos
-                //    .path(videoPath)
-                  //  .toUriString();
-            formation.setVideoPath(videoPath); // Enregistrer l'URL pour accéder au fichier vidéo
+            System.out.println("videoPath :" + videoPath);
+            formation.setVideoPath(videoPath);
 
             // Sauvegarder le fichier image
             String imagePath = fileStorage.saveImage(imageFile);
-            //String imageUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
-              //      .path("/images/") // Mettez à jour le chemin pour les images
-               //     .path(imagePath)
-                //    .toUriString();
-            formation.setImageUrl(imagePath); // Enregistrer l'URL pour accéder au fichier image
+            System.out.println("imagePath :" + imagePath);
+            formation.setImageUrl(imagePath);
+
+            // Sauvegarder le fichier PDF
+            String pdfPath = fileStorage.savePDF(pdfFile); // Méthode pour sauvegarder le PDF
+            System.out.println("pdfPath :" + pdfPath);
+            formation.setPdfPath(pdfPath); // Assigner le chemin du PDF à l'objet formation
 
             Formation createdFormation = formationService.addFormation(formation);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdFormation);
         } catch (JsonProcessingException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);  // Erreur de conversion JSON
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);  // Erreurs générales
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
 
     @GetMapping("/mesformations")
     public ResponseEntity<List<Formation>> getFormationsForConnectedUser() {
@@ -82,7 +86,7 @@ public class FormationController {
 
     @GetMapping("/recent")
     public List<Formation> getUpcomingFormations() {
-        return formationService.getUpcomingFormations(); // Récupérez les 3 dernières formations à venir
+        return formationService.getUpcomingFormations();
     }
 
     @GetMapping("/by-month")
@@ -92,9 +96,49 @@ public class FormationController {
     }
 
     @PutMapping("/modifier/{id}")
-    public ResponseEntity<Formation> updateFormation(@PathVariable Long id, @RequestBody Formation formationDetails) {
-        Formation updatedFormation = formationService.updateFormation(id, formationDetails);
-        return ResponseEntity.ok(updatedFormation);
+    public ResponseEntity<Formation> updateFormation(
+            @PathVariable Long id,
+            @RequestPart(value = "formation", required = false) String formationJson,
+            @RequestPart(value = "videoFile", required = false) MultipartFile videoFile,
+            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
+            @RequestPart(value = "pdfFile", required = false) MultipartFile pdfFile) { // Ajout pour le PDF
+
+        try {
+            Formation updatedFormation = formationService.getFormationById(id)
+                    .orElseThrow(() -> new RuntimeException("Formation non trouvée"));
+
+            if (formationJson != null) {
+                Formation formationDetails = objectMapper.readValue(formationJson, Formation.class);
+                updatedFormation.setTitre(formationDetails.getTitre());
+                updatedFormation.setDescription(formationDetails.getDescription());
+                // Mettez à jour d'autres champs si nécessaire
+            }
+
+            // Gérer la mise à jour des fichiers vidéo, image et PDF
+            if (videoFile != null && !videoFile.isEmpty()) {
+                String videoPath = fileStorage.saveVideo(videoFile);
+                updatedFormation.setVideoPath(videoPath);
+            }
+
+            if (imageFile != null && !imageFile.isEmpty()) {
+                String imagePath = fileStorage.saveImage(imageFile);
+                updatedFormation.setImageUrl(imagePath);
+            }
+
+            if (pdfFile != null && !pdfFile.isEmpty()) {
+                String pdfPath = fileStorage.savePDF(pdfFile);
+                updatedFormation.setPdfPath(pdfPath); // Assurez-vous que cette propriété existe dans l'entité Formation
+            }
+
+            Formation savedFormation = formationService.updateFormation(id, updatedFormation);
+            return ResponseEntity.ok(savedFormation);
+        } catch (JsonProcessingException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
     @DeleteMapping("/del/{id}")
@@ -106,35 +150,26 @@ public class FormationController {
     @GetMapping("/image/{nomImage}")
     public ResponseEntity<Resource> getImage(@PathVariable String nomImage) {
         try {
-            // Chemin complet vers l'image dans le dossier "images"
-            String imagePath = "images/" + nomImage; // Assurez-vous que ce chemin est correct
-            System.out.println("Trying to access image at path: " + imagePath); // Log du chemin de l'image
+            String imagePath = "images/" + nomImage;
+            System.out.println("Trying to access image at path: " + imagePath);
 
             FileSystemResource resource = new FileSystemResource(imagePath);
 
-            // Vérifiez si le fichier existe
             if (resource.exists()) {
-                System.out.println("Image found: " + imagePath); // Log si l'image est trouvée
+                System.out.println("Image found: " + imagePath);
                 HttpHeaders headers = new HttpHeaders();
-                headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=" + nomImage); // Changez "attachment" à "inline" pour afficher l'image
+                headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=" + nomImage);
                 return ResponseEntity.ok()
                         .headers(headers)
-                        .body((Resource) resource); // Pas besoin de cast ici
+                        .body(resource);
             } else {
-                System.out.println("Image not found: " + imagePath); // Log si l'image n'est pas trouvée
+                System.out.println("Image not found: " + imagePath);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
         } catch (Exception e) {
-            System.err.println("Error occurred while fetching the image: " + e.getMessage()); // Log d'erreur
-            e.printStackTrace(); // Affiche la trace de l'erreur pour plus de détails
+            System.err.println("Error occurred while fetching the image: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
-
-
-
 }
-
-
-

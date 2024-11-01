@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class UtilisateurService implements UserDetailsService {
@@ -24,6 +26,11 @@ public class UtilisateurService implements UserDetailsService {
     }
 
 
+    // Nouvelle méthode pour récupérer les mentors
+    public List<Utilisateur> getMentors() {
+        return utilisateurRepository.findByRole_Nom("Mentor"); // Remplacez "Mentor" par le nom exact du rôle
+    }
+
     // Méthode pour récupérer l'utilisateur connecté
     public Utilisateur getCurrentUser() {
         // Récupérer l'utilisateur connecté à partir de la sécurité
@@ -34,5 +41,4 @@ public class UtilisateurService implements UserDetailsService {
         return utilisateurRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
-
 }

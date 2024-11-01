@@ -35,11 +35,20 @@ public class OffreEmploiService {
     public OffreEmploi addOffre(OffreEmploi offreEmploi) {
         System.out.println("Offre à sauvegarder dans le service: " + offreEmploi);
         Object currentUser = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Utilisateur utilisateur = utilisateurRepository.findByEmail(((UserDetails)currentUser).getUsername()).get();
+
+        Utilisateur utilisateur;
+
+        if (currentUser instanceof UserDetails) {
+            String username = ((UserDetails) currentUser).getUsername();
+            utilisateur = utilisateurRepository.findByEmail(username).orElseThrow(() ->
+                    new RuntimeException("Utilisateur non trouvé"));
+        } else {
+            throw new RuntimeException("Utilisateur non authentifié");
+        }
+
         offreEmploi.setUtilisateur(utilisateur);
         return offreEmploiRepository.save(offreEmploi);
     }
-
 
     // Mettre à jour une offre d'emploi existante
     public OffreEmploi updateOffre(Long id, OffreEmploi updatedOffre) {

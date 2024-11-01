@@ -20,9 +20,4 @@ public class Role {
     @Column(unique = true)
     private String nom;
 
-
-    @OneToMany(mappedBy = "role", fetch = FetchType.EAGER)
-    @JsonBackReference
-    private List<Utilisateur> utilisateurs;
-
 }

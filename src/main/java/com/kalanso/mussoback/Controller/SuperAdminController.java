@@ -45,6 +45,14 @@ public class SuperAdminController {
     }
 
 
+    // Nouveau endpoint pour récupérer la liste des mentors
+    @GetMapping("/mentors")
+    public ResponseEntity<List<Utilisateur>> getMentors() {
+        List<Utilisateur> mentors = utilisateurService.getMentors();
+        return ResponseEntity.ok(mentors);
+    }
+
+
 
     @PutMapping("/modifier/{id}")
     @ResponseStatus(HttpStatus.CREATED)
@@ -57,4 +65,7 @@ public class SuperAdminController {
     public void supprimer(@PathVariable Long id) {
         superAdminService.delete(id);
     }
+
+
+
 }

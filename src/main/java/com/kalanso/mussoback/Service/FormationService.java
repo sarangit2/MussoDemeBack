@@ -46,13 +46,29 @@ public class FormationService {
         }
 
         // Récupérer l'utilisateur actuellement authentifié
-        Object currentUser = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Utilisateur utilisateur = utilisateurRepository.findByEmail(((UserDetails) currentUser).getUsername())
-                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé")); // Gestion des erreurs si l'utilisateur n'est pas trouvé
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        formation.setUtilisateur(utilisateur); // Assigner l'utilisateur à la formation
-        return formationRepository.save(formation); // Enregistrer la formation
+        // Vérifiez si l'authentification est non nulle et authentifiée
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("Aucun utilisateur authentifié.");
+        }
+
+        Object currentUser = authentication.getPrincipal();
+
+        // Vérifiez le type de currentUser
+        if (!(currentUser instanceof UserDetails)) {
+            throw new RuntimeException("Le principal n'est pas de type UserDetails.");
+        }
+
+        // Récupérez l'utilisateur à partir de l'email
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(((UserDetails) currentUser).getUsername())
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
+        // Assignation de l'utilisateur à la formation
+        formation.setUtilisateur(utilisateur);
+        return formationRepository.save(formation); // Enregistrement de la formation
     }
+
 
 
     public List<Formation> getUpcomingFormations() {

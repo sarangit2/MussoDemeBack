@@ -25,6 +25,7 @@ public class Utilisateur implements UserDetails {
     private Long id;
     private String nom;
     private String prenom;
+
     @Column(unique = true)
     private String email;
     private String phone;
@@ -33,13 +34,11 @@ public class Utilisateur implements UserDetails {
 
     @ManyToOne
     @JoinColumn(name = "role_id")
-    @JsonIgnore
     private Role role;
 
     @OneToMany(mappedBy = "utilisateur")
     @JsonIgnore
     private List<OffreEmploi> offres;
-
 
     @OneToMany(mappedBy = "utilisateur")
     @JsonIgnore
@@ -48,6 +47,8 @@ public class Utilisateur implements UserDetails {
     @OneToMany(mappedBy = "utilisateur")
     @JsonBackReference
     private List<Formation> formations;
+
+    private boolean discussionAccepted; // Champ pour indiquer si la discussion est acceptée
 
     // Méthode pour définir automatiquement la date d'ajout
     @PrePersist
@@ -59,6 +60,7 @@ public class Utilisateur implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singleton((new SimpleGrantedAuthority("ROLE_" + this.getRole().getNom())));
     }
+
     @Override
     public String getUsername() {
         return email;

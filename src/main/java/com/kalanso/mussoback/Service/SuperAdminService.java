@@ -51,7 +51,10 @@ public class SuperAdminService implements CrudService<SuperAdmin, Long> {
         return superAdminRepository.save(superAdmin);
     }
 
-
+    // Nouvelle méthode pour récupérer les mentors
+    public List<Utilisateur> getMentors() {
+        return utilisateurRepository.findByRole_Nom("Mentor"); // Remplacez "Mentor" par le nom exact du rôle
+    }
 
     @Override
     public SuperAdmin add(SuperAdmin entity) {

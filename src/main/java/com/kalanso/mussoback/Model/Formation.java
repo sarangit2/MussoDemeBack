@@ -26,12 +26,13 @@ public class Formation {
 
     private String videoPath; // Champ pour le chemin de la vidéo
     private String imageUrl;  // Chemin ou URL de l'image
+    private String pdfPath;   // Champ pour le chemin du PDF
 
     // Constructeurs, getters et setters
 
     public Formation() {}
 
-    public Formation(String titre, String description, LocalDate dateDebut, LocalDate dateFin, String organisateur, Categorie categorie, Utilisateur utilisateur, String videoPath, String imageUrl) {
+    public Formation(String titre, String description, LocalDate dateDebut, LocalDate dateFin, String organisateur, Categorie categorie, Utilisateur utilisateur, String videoPath, String imageUrl, String pdfPath) {
         this.titre = titre;
         this.description = description;
         this.dateDebut = dateDebut;
@@ -41,6 +42,7 @@ public class Formation {
         this.utilisateur = utilisateur;
         this.videoPath = videoPath;
         this.imageUrl = imageUrl;  // Ajouter imageUrl ici
+        this.pdfPath = pdfPath;     // Ajouter pdfPath ici
     }
 
     @PrePersist
@@ -90,4 +92,8 @@ public class Formation {
     public String getImageUrl() { return imageUrl; }  // Getter pour imageUrl
 
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }  // Setter pour imageUrl
+
+    public String getPdfPath() { return pdfPath; } // Getter pour pdfPath
+
+    public void setPdfPath(String pdfPath) { this.pdfPath = pdfPath; } // Setter pour pdfPath
 }
