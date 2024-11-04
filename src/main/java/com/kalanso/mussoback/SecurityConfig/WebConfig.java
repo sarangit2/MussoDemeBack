@@ -17,7 +17,7 @@ public class WebConfig implements WebMvcConfigurer {
 
         // Nouvel endpoint pour les API
         registry.addMapping("/api/**") // Ajoutez cet endpoint
-                .allowedOrigins("http://localhost:55015") // Autorisez les origines spécifiques
+                .allowedOrigins("http://localhost:55015, http://localhost:4200") // Autorisez les origines spécifiques
                 .allowedMethods("GET", "POST", "PUT", "DELETE") // Méthodes HTTP autorisées
                 .allowedHeaders("*"); // Autoriser tous les headers
     }

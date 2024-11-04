@@ -10,6 +10,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,7 +30,7 @@ public class FormationController {
     private final ObjectMapper objectMapper;
     private final FileStorage fileStorage;
 
-    @PostMapping("/ajout")
+    @PostMapping(value = "/ajout", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Formation> createFormation(
             @RequestPart("formation") String formationJson,
             @RequestPart("videoFile") MultipartFile videoFile,

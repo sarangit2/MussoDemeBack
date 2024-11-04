@@ -15,12 +15,10 @@ public class Article {
 
     private String titre;
     private String description;
-
     @Enumerated(EnumType.STRING) // Utilisation de EnumType.STRING pour stocker le nom de l'énumération
     private Type type; // Changement du type de String à ArticleType
-
     private String audioUrl;  // Ajout du champ audioUrl
-    private LocalDate datePublication;
+    private LocalDate datePublication = LocalDate.now();
     private LocalDate dateAjout;  // Nouveau champ pour la date d'ajout
 
     @ManyToOne
